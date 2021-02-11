@@ -1,0 +1,28 @@
+<div class="weather-widget">
+    <h2 class="title">Weather in {{weather.city}}</h2>
+
+    <p class="label">{{weather.label}}</p>
+    <i class="icon {{weather.icon}}"></i>
+
+    <table class="table">
+        <tbody>
+        <tr>
+            <td>Temperature</td>
+            <td class="temp">{{weather.temp}}</td>
+        </tr>
+        <tr>
+            <td>Pressure</td>
+            <td class="pressure">{{weather.pressure}}</td>
+        </tr>
+        <tr>
+            <td>Humidity</td>
+            <td class="humidity">{{weather.humidity}}</td>
+        </tr>
+        </tbody>
+    </table>
+
+    <link rel="stylesheet" href="/styles/weather-icons.min.css"/>
+    <link rel="stylesheet" href="/styles/weather-widget.css"/>
+</div>
+
+

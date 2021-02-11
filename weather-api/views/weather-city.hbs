@@ -1,0 +1,10 @@
+{{> header title="Wheather in " cities=cities}}
+
+<div class="container">
+    <div class="content">
+        {{> side_nav cities=cities}}
+        {{> weather_widget weather=weather}}
+    </div>
+</div>
+
+{{> footer}}

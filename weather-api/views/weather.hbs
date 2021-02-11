@@ -1,0 +1,15 @@
+{{> header title="Wheather dashboard" cities=cities}}
+
+<div class="container">
+    <div class="content">
+        {{> side_nav cities=cities}}
+        <p id="status"> Loading...</p>
+        <div id="wrapper">
+            {{> weather_widget weather=weather}}
+        </div>
+    </div>
+</div>
+
+<script src="/script/get-weather-by-coords.js"></script>
+<link href="/styles/weather.css" rel="stylesheet"/>
+{{> footer}}

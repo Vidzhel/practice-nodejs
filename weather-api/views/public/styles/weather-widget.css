@@ -1,0 +1,5 @@
+.weather-widget i {
+    font-size: 80px;
+    margin: 20px auto;
+    display: inline-block;
+}
