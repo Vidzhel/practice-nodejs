@@ -100,6 +100,15 @@ router.get(
 );
 
 router.get(
+    "/me/delete",
+    asyncHelper(authBarrier),
+    asyncHelper(async (req, res) => {
+        await req.user.delete();
+        res.send();
+    })
+);
+
+router.get(
     "/:id",
     asyncHelper(async (req, res) => {
         const user = await dbConfig.User.findById(req.params.id);

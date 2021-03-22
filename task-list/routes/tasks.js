@@ -3,6 +3,9 @@ const router = express.Router();
 const dbConfig = require("../db/config");
 const asyncHelper = require("./utils/helpers").asyncHelper;
 
+const errors = require("./utils/errors");
+const NotFound = errors.NotFound;
+
 router.post(
     "/create",
     asyncHelper(async (req, res) => {
@@ -27,6 +30,18 @@ router.get(
     asyncHelper(async (req, res) => {
         const task = await dbConfig.Task.findById(req.params.id);
         res.json(task);
+    })
+);
+
+router.get(
+    "/delete/:id",
+    asyncHelper(async (req, res) => {
+        const task = await dbConfig.Task.findById(req.params.id).exec();
+        if (!task) {
+            throw new NotFound("Task with the id wasn't found"); 
+        }
+        await task.delete();
+        res.send();
     })
 );
 
