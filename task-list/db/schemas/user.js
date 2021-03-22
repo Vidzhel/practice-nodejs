@@ -44,6 +44,12 @@ const UserSchema = new mongoose.Schema({
     tokens: [String],
 });
 
+UserSchema.virtual("tasks", {
+    ref: "Task",
+    localField: "_id",
+    foreignField: "owner"
+})
+
 UserSchema.pre("save", async function (next) {
     const user = this;
 
@@ -55,6 +61,18 @@ UserSchema.pre("save", async function (next) {
 
 UserSchema.methods.hasPassword = async function (password) {
     return await bcrypt.compare(password, this.password);
+};
+
+UserSchema.methods.toJson = function () {
+    const container = this.toObject();
+    delete container.password;
+    delete container.tokens;
+    return container;
+};
+
+UserSchema.methods.logoutAll = async function () {
+    this.tokens = [];
+    await this.save();
 };
 
 UserSchema.methods.generateToken = async function () {

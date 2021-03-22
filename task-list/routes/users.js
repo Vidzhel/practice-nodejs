@@ -1,7 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const dbConfig = require("../db/config");
-const asyncHelper = require("./utils/helpers").asyncHelper;
+const asyncExceptionsHandler = require("./utils/helpers").asyncExceptionsHandler;
 const authBarrier = require("../middleware/auth");
 
 const errors = require("./utils/errors");
@@ -10,7 +10,7 @@ const NotFound = errors.NotFound;
 
 router.post(
     "/create",
-    asyncHelper(async (req, res) => {
+    asyncExceptionsHandler(async (req, res) => {
         const user = new dbConfig.User({
             email: req.body.email,
             name: req.body.name,
@@ -29,42 +29,38 @@ router.post(
 
 router.get(
     "/",
-    asyncHelper(async (req, res) => {
-        const users = await dbConfig.User.find({});
+    asyncExceptionsHandler(async (req, res) => {
+        const users = (await dbConfig.User.find({})).map(user => user.toJson());
         res.json(users);
     })
 );
 
 router.post(
-    "/update/:id",
-    asyncHelper(async (req, res) => {
-        const user = await dbConfig.User.findById(req.params.id);
-        if (!user) {
-            throw new NotFound("User with the id wasn't found");
-        }
-
+    "/me",
+    asyncExceptionsHandler(authBarrier),
+    asyncExceptionsHandler(async (req, res) => {
         ["name", "email", "age"].forEach((field) => {
-            user[field] = req.body[field];
+            req.user[field] = req.body[field];
         });
 
         const newPassword = req.body.newPassword;
         if (newPassword) {
-            if (await user.hasPassword(req.body.password)) {
-                user.password = newPassword;
+            if (await req.user.hasPassword(req.body.password)) {
+                req.user.password = newPassword;
             } else {
                 throw new WrongPasswordError();
             }
         }
 
-        await user.save();
+        await req.user.save();
 
-        res.json(user);
+        res.json(req.user.toJson());
     })
 );
 
 router.post(
     "/auth",
-    asyncHelper(async (req, res) => {
+    asyncExceptionsHandler(async (req, res) => {
         try {
             const user = await dbConfig.User.findOneByCredentials(
                 req.body.email,
@@ -83,8 +79,8 @@ router.post(
 
 router.post(
     "/logout",
-    asyncHelper(authBarrier),
-    asyncHelper(async (req, res) => {
+    asyncExceptionsHandler(authBarrier),
+    asyncExceptionsHandler(async (req, res) => {
         req.user.tokens.remove(req.token);
         await req.user.save();
         res.send();
@@ -93,24 +89,32 @@ router.post(
 
 router.get(
     "/me",
-    asyncHelper(authBarrier),
-    asyncHelper(async (req, res) => {
-        return res.json(req.user);
+    asyncExceptionsHandler(authBarrier),
+    asyncExceptionsHandler(async (req, res) => {
+        return res.json(req.user.toJson());
     })
 );
 
 router.get(
     "/me/delete",
-    asyncHelper(authBarrier),
-    asyncHelper(async (req, res) => {
+    asyncExceptionsHandler(authBarrier),
+    asyncExceptionsHandler(async (req, res) => {
         await req.user.delete();
         res.send();
     })
 );
 
 router.get(
+    "/logout-all",
+    asyncExceptionsHandler(authBarrier),
+    asyncExceptionsHandler(async (req, res) => {
+        return await req.user.logoutAll();
+    })
+);
+
+router.get(
     "/:id",
-    asyncHelper(async (req, res) => {
+    asyncExceptionsHandler(async (req, res) => {
         const user = await dbConfig.User.findById(req.params.id);
 
         if (!user) {
