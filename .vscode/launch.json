@@ -5,6 +5,19 @@
     "version": "0.2.0",
     "configurations": [
         {
+            "name": "Debug Realtime Chat frontend",
+            "request": "launch",
+            "type": "pwa-chrome",
+            "url": "http://localhost:8080",
+            "webRoot": "${workspaceFolder}/realtime-chat/frontend"
+        },
+        {
+            "name": "Debug Realtime Chat frontend",
+            "port": 8080,
+            "request": "attach",
+            "type": "pwa-chrome"
+        },
+        {
             "type": "pwa-node",
             "request": "launch",
             "name": "Debug Task list",
@@ -12,6 +25,16 @@
             "runtimeExecutable": "npm",
             "runtimeArgs": ["run-script", "start"],
             "cwd": "${workspaceFolder}/task-list",
+            "env": {}
+        },
+        {
+            "type": "pwa-node",
+            "request": "launch",
+            "name": "Debug Realtime Chat backend",
+            "skipFiles": ["<node_internals>/**"],
+            "runtimeExecutable": "npm",
+            "runtimeArgs": ["run-script", "start"],
+            "cwd": "${workspaceFolder}/realtime-chat/backend",
             "env": {}
         }
     ]
