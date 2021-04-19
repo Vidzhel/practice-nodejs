@@ -9,7 +9,7 @@ const NotFound = errors.NotFound;
 
 router.post(
     "/create",
-    asyncExceptionsHandler(authBarrier),
+    asyncExceptionsHandler(authBarrier()),
     asyncExceptionsHandler(async (req, res) => {
         const task = new dbConfig.Task({ description: req.body.description, owner: req.user.id });
         await task.save();
@@ -21,20 +21,29 @@ router.post(
 
 router.get(
     "/",
-    asyncExceptionsHandler(authBarrier),
+    asyncExceptionsHandler(authBarrier()),
     asyncExceptionsHandler(async (req, res) => {
-        const tasks = (await dbConfig.Task.find({owner: req.user.id}).populate("owner").exec()).map(task => task.toJson());
+        let tasks;
+        if (req.user.isAdmin) {
+            tasks = (await dbConfig.Task.find().populate("owner").exec()).map((task) =>
+                task.toJson()
+            );
+        } else {
+            tasks = (
+                await dbConfig.Task.find({ owner: req.user.id }).populate("owner").exec()
+            ).map((task) => task.toJson());
+        }
         res.json(tasks);
     })
 );
 
 router.get(
     "/delete/:id",
-    asyncExceptionsHandler(authBarrier),
+    asyncExceptionsHandler(authBarrier()),
     asyncExceptionsHandler(async (req, res) => {
-        const task = await dbConfig.Task.findOne({_id: req.params.id, owner: req.user.id}).exec();
+        const task = await dbConfig.Task.findOne({ _id: req.params.id, owner: req.user.id }).exec();
         if (!task) {
-            throw new NotFound("Task with the id wasn't found"); 
+            throw new NotFound("Task with the id wasn't found");
         }
         await task.delete();
         res.send();
@@ -43,12 +52,15 @@ router.get(
 
 router.post(
     "/update/:id",
-    asyncExceptionsHandler(authBarrier),
+    asyncExceptionsHandler(authBarrier()),
     asyncExceptionsHandler(async (req, res) => {
-        const task = await dbConfig.Task.findOne({_id: req.params.id, owner: req.user.id}).exec();
-        
+        const task = await dbConfig.Task.findOne({ _id: req.params.id }).exec();
+
+        if (!req.user.isAdmin && req.user.id != task.owner) {
+            throw new Error("Access forbidden");
+        }
         if (!task) {
-            throw new NotFound("Task with the id wasn't found"); 
+            throw new NotFound("Task with the id wasn't found");
         }
 
         ["description", "completed"].forEach((field) => {
@@ -62,10 +74,13 @@ router.post(
 
 router.get(
     "/:id",
-    asyncExceptionsHandler(authBarrier),
+    asyncExceptionsHandler(authBarrier()),
     asyncExceptionsHandler(async (req, res) => {
-        const task = await dbConfig.Task.findOne({_id: req.params.id, owner: req.user.id}).exec();
+        const task = await dbConfig.Task.findOne({ _id: req.params.id }).exec();
 
+        if (!req.user.isAdmin && req.user.id != task.owner) {
+            throw new Error("Access forbidden");
+        }
         if (!task) {
             throw new NotFound("User's task with the id wasn't found");
         }

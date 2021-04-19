@@ -29,15 +29,16 @@ router.post(
 
 router.get(
     "/",
+    asyncExceptionsHandler(authBarrier(true)),
     asyncExceptionsHandler(async (req, res) => {
-        const users = (await dbConfig.User.find({})).map(user => user.toJson());
+        const users = (await dbConfig.User.find({})).map((user) => user.toJson());
         res.json(users);
     })
 );
 
 router.post(
     "/me",
-    asyncExceptionsHandler(authBarrier),
+    asyncExceptionsHandler(authBarrier()),
     asyncExceptionsHandler(async (req, res) => {
         ["name", "email", "age"].forEach((field) => {
             req.user[field] = req.body[field];
@@ -79,7 +80,7 @@ router.post(
 
 router.post(
     "/logout",
-    asyncExceptionsHandler(authBarrier),
+    asyncExceptionsHandler(authBarrier()),
     asyncExceptionsHandler(async (req, res) => {
         req.user.tokens.remove(req.token);
         await req.user.save();
@@ -89,7 +90,7 @@ router.post(
 
 router.get(
     "/me",
-    asyncExceptionsHandler(authBarrier),
+    asyncExceptionsHandler(authBarrier()),
     asyncExceptionsHandler(async (req, res) => {
         return res.json(req.user.toJson());
     })
@@ -97,7 +98,7 @@ router.get(
 
 router.get(
     "/me/delete",
-    asyncExceptionsHandler(authBarrier),
+    asyncExceptionsHandler(authBarrier()),
     asyncExceptionsHandler(async (req, res) => {
         await req.user.delete();
         res.send();
@@ -106,7 +107,7 @@ router.get(
 
 router.get(
     "/logout-all",
-    asyncExceptionsHandler(authBarrier),
+    asyncExceptionsHandler(authBarrier()),
     asyncExceptionsHandler(async (req, res) => {
         return await req.user.logoutAll();
     })
