@@ -116,6 +116,10 @@ button:disabled {
     overflow-y: scroll;
 }
 
+#messages {
+    overflow: auto;
+}
+
 /* Message Styles */
 
 .message {

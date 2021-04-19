@@ -61,7 +61,7 @@
             <ul class="list-group">
                 <li class="list-group-item list-group-item-primary">Users in the chatroom</li>
                 {{#users}}
-                <li class="list-group-item">{{username}}</li>
+                <li class="list-group-item">{{username}}{{#typing}} - typing{{/typing}}</li>
                 {{/users}}
             </ul>
         </script>
@@ -98,10 +98,17 @@
                 });
                 const container = document.createElement("div");
                 container.innerHTML = message;
+
+                const scrollHeight = messages.scrollHeight;
+                const currentScroll = messages.scrollTop;
                 messages.append(container);
+
+                // scroll to bottom if the view is almost at the bottom
+                if (scrollHeight - currentScroll < 1000) {
+                    messages.scrollTop = messages.scrollHeight;
+                }
             });
             socket.on("roomData", (data) => {
-                console.log("roomData");
                 const renderedData = Mustache.render(sidebarTemplate, data);
                 sidebar.innerHTML = renderedData;
             });
@@ -125,10 +132,52 @@
                             const container = document.createElement("div");
                             container.innerHTML = renderedMessage;
                             messages.append(container);
+                            messages.scrollTop = messages.scrollHeight;
                         }
                     });
                 }
             };
+
+            let userIsTyping = false;
+            let typingRequestInterval = null;
+            let checkTyping = null;
+
+            messageFormInput.addEventListener("input", () => {
+                // debounce algorithm
+                // after input changed, wait 1500 ms to emit "iamTyping" event
+                // if user doesn't type for 745ms, he isn't typing - stop "iamTyping" event interval or emit "iamNotTyping" event
+                if (checkTyping) {
+                    clearInterval(checkTyping);
+                }
+                checkTyping = setTimeout(() => {
+                    if (typingRequestInterval) {
+                        clearInterval(typingRequestInterval);
+                    }
+                    if (userIsTyping) {
+                        userIsTyping = false;
+                        socket.emit("iamNotTyping", null, (err) => {
+                            if (err) {
+                                alert(err);
+                            }
+                        });
+                    }
+                }, 745);
+
+                if (userIsTyping) {
+                    return;
+                }
+
+                userIsTyping = true;
+                typingRequestInterval = setTimeout(
+                    () =>
+                        socket.emit("iamTyping", null, (err) => {
+                            if (err) {
+                                alert(err);
+                            }
+                        }),
+                    1500
+                );
+            });
 
             socket.emit(
                 "join",

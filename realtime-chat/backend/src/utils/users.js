@@ -25,9 +25,19 @@ const addUser = ({ id, username, room }) => {
     }
 
     // Store user
-    const user = { id, username, room };
+    const user = { id, username, room, typing: false };
     users.push(user);
     return { user };
+};
+
+const userIsTyping = (id) => {
+    const user = getUser(id);
+    user.typing = true;
+};
+
+const userIsNotTyping = (id) => {
+    const user = getUser(id);
+    user.typing = false;
 };
 
 const removeUser = (id) => {
@@ -47,9 +57,17 @@ const getUsersInRoom = (room) => {
     return users.filter((user) => user.room === room);
 };
 
+const getUsersWithNameInRoom = (room, username) => {
+    room = room.trim().toLowerCase();
+    return users.filter((user) => user.room === room && user.username === username)[0];
+};
+
 module.exports = {
     addUser,
     removeUser,
     getUser,
     getUsersInRoom,
+    userIsTyping,
+    userIsNotTyping,
+    getUsersWithNameInRoom,
 };

@@ -12,12 +12,6 @@
             "webRoot": "${workspaceFolder}/realtime-chat/frontend"
         },
         {
-            "name": "Debug Realtime Chat frontend",
-            "port": 8080,
-            "request": "attach",
-            "type": "pwa-chrome"
-        },
-        {
             "type": "pwa-node",
             "request": "launch",
             "name": "Debug Task list",
