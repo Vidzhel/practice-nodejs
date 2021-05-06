@@ -15,9 +15,14 @@
             "type": "pwa-node",
             "request": "launch",
             "name": "Debug Task list",
-            "skipFiles": ["<node_internals>/**"],
+            "skipFiles": [
+                "<node_internals>/**"
+            ],
             "runtimeExecutable": "npm",
-            "runtimeArgs": ["run-script", "start"],
+            "runtimeArgs": [
+                "run-script",
+                "start"
+            ],
             "cwd": "${workspaceFolder}/task-list",
             "env": {}
         },
@@ -25,11 +30,26 @@
             "type": "pwa-node",
             "request": "launch",
             "name": "Debug Realtime Chat backend",
-            "skipFiles": ["<node_internals>/**"],
+            "skipFiles": [
+                "<node_internals>/**"
+            ],
             "runtimeExecutable": "npm",
-            "runtimeArgs": ["run-script", "start"],
+            "runtimeArgs": [
+                "run-script",
+                "start"
+            ],
             "cwd": "${workspaceFolder}/realtime-chat/backend",
             "env": {}
-        }
+        },
+        {
+            "name": "Debug Task list fronend",
+            "request": "launch",
+            "type": "pwa-chrome",
+            "url": "http://localhost:8080",
+            "webRoot": "${workspaceFolder}/task-list/client",
+            "sourceMapPathOverrides": {
+                "webpack:///src/*": "${webRoot}/*"
+            }
+        },
     ]
 }
