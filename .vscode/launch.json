@@ -5,16 +5,27 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "Debug Realtime Chat frontend",
+            "type": "node",
             "request": "launch",
-            "type": "pwa-chrome",
-            "url": "http://localhost:8080",
-            "webRoot": "${workspaceFolder}/realtime-chat/frontend"
+            "name": "Jest Current File",
+            "program": "${workspaceFolder}/try-mocha/node_modules/.bin/jest",
+            "cwd": "${workspaceFolder}/try-mocha",
+            "args": [
+                "${fileBasenameNoExtension}",
+                "--config",
+                "jest.config.js"
+            ],
+            "console": "integratedTerminal",
+            "internalConsoleOptions": "neverOpen",
+            "disableOptimisticBPs": true,
+            "windows": {
+                "program": "${workspaceFolder}/try-mocha/node_modules/jest/bin/jest",
+            }
         },
         {
             "type": "pwa-node",
             "request": "launch",
-            "name": "Debug Task list",
+            "name": "Debug Task list backend",
             "skipFiles": [
                 "<node_internals>/**"
             ],
