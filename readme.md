@@ -10,6 +10,7 @@ The repository contains a few projects that have been build in order to practice
     -   Bootstrap
     -   Handlebars
 -   Task Manager - API for a simple task list manager
+    -   Vue
     -   Authorization with JWT tokens
     -   Admin
     -   Postmen
@@ -23,3 +24,5 @@ The repository contains a few projects that have been build in order to practice
     -   See, when someone is typing
 
 ![Realtime messenger](https://i.imgur.com/2eOf235.png)
+![Task list](https://i.imgur.com/jHL00cr.jpeg)
+![Task list API](https://i.imgur.com/t5SjnBD.jpeg)
